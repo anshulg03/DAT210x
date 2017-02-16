@@ -4,6 +4,8 @@ import pandas as pd
 # Ensuring you set the appropriate header column names
 #
 # .. your code here ..
+df = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module2/Datasets/servo.data', 
+                 header=None, names=['motor', 'screw', 'pgain', 'vgain', 'class'])
 
 
 # TODO: Create a slice that contains all entries
@@ -11,7 +13,8 @@ import pandas as pd
 # length of (# of samples in) that slice:
 #
 # .. your code here ..
-
+df1 = df[df.vgain == 5]
+len(df1)
 
 # TODO: Create a slice that contains all entries
 # having a motor equal to E and screw equal
@@ -19,7 +22,7 @@ import pandas as pd
 # samples in) that slice:
 #
 # .. your code here ..
-
+len(df[(df.motor == 'E') & (df.screw == 'E')])
 
 
 # TODO: Create a slice that contains all entries
@@ -29,7 +32,7 @@ import pandas as pd
 # you've found it, print it:
 #
 # .. your code here ..
-
+df[df.pgain == 4].describe()
 
 
 # TODO: (Bonus) See what happens when you run

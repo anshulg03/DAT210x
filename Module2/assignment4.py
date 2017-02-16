@@ -21,7 +21,8 @@ df.GP = pd.to_numeric(df.GP, errors='coerce')
 #
 # .. your code here ..
 df = df.dropna(axis = 0, thresh = 4)
-df = df.GP.dropna(axis = 0)
+df = df.drop('RK',1)
+df = df.dropna()
 
 # TODO: At this point, look through your dataset by printing
 # it. There probably still are some erroneous rows in there.
@@ -47,9 +48,10 @@ df = df.GP.dropna(axis = 0)
 # that should be numeric are numeric
 #
 # .. your code here ..
+df.dtypes
+df.PCT = pd.to_numeric(df.PCT, errors='coerce')
 
-
-
+df = df.reset_index()
 # TODO: Your dataframe is now ready! Use the appropriate 
 # commands to answer the questions on the course lab page.
 #

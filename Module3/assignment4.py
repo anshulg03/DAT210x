@@ -15,7 +15,7 @@ plt.style.use('ggplot')
 # 
 # .. your code here ..
 
-
+df = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module3/Datasets/wheat.data', index_col = 0)
 
 #
 # TODO: Drop the 'id' feature, if you included it as a feature
@@ -23,8 +23,8 @@ plt.style.use('ggplot')
 # Also get rid of the 'area' and 'perimeter' features
 # 
 # .. your code here ..
-
-
+del df['area']
+del df['perimeter']
 
 #
 # TODO: Plot a parallel coordinates chart grouped by
@@ -33,7 +33,7 @@ plt.style.use('ggplot')
 # 
 # .. your code here ..
 
-
+parallel_coordinates(df,'wheat_type')
 
 plt.show()
 

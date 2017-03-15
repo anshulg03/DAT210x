@@ -18,7 +18,7 @@ matplotlib.style.use('ggplot')
 
 
 # Load up the scanned armadillo
-plyfile = PlyData.read('Datasets/stanford_armadillo.ply')
+plyfile = PlyData.read('C:/Users/anshangu/Documents/GitHub/DAT210x/Module4/Datasets/stanford_armadillo.ply')
 armadillo = pd.DataFrame({
   'x':plyfile['vertex']['z'][::reduce_factor],
   'y':plyfile['vertex']['x'][::reduce_factor],
@@ -39,8 +39,11 @@ def do_PCA(armadillo):
   # you automatically. =)
   #
   # .. your code here ..
+ from sklearn.decomposition import PCA
+ pca = PCA(n_components=2)
+ pca.fit(armadillo)
 
-  return None
+ return pca.transform(armadillo)
 
 
 def do_RandomizedPCA(armadillo):
@@ -63,8 +66,11 @@ def do_RandomizedPCA(armadillo):
   # http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
   #
   # .. your code here ..
+ from sklearn.decomposition import PCA
+ rpca = PCA(n_components=2, svd_solver = 'randomized')
+ rpca.fit(armadillo)
 
-  return None
+ return rpca.transform(armadillo)
 
 
 

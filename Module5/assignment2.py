@@ -2,6 +2,7 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 import matplotlib
+from sklearn.cluster import KMeans
 
 matplotlib.style.use('ggplot') # Look Pretty
 
@@ -23,6 +24,11 @@ def showandtell(title=None):
 # Convert the date using pd.to_datetime, and the time using pd.to_timedelta
 #
 # .. your code here ..
+df = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module5/Datasets/CDR.csv')
+df.head()
+df.CallDate = pd.to_datetime(df.CallDate)
+df.CallTime = pd.to_timedelta(df.CallTime)
+
 
 
 #
@@ -31,7 +37,7 @@ def showandtell(title=None):
 # Hint: https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html
 #
 # .. your code here ..
-
+unqlst = df.In.unique()
 
 # 
 # TODO: Create a slice called user1 that filters to only include dataset records where the
@@ -39,7 +45,8 @@ def showandtell(title=None):
 # that is, the very first number in the dataset
 #
 # .. your code here ..
-
+df.dtypes
+user1 = df[df.In == unqlst[0]]
 
 # INFO: Plot all the call locations
 user1.plot.scatter(x='TowerLon', y='TowerLat', c='gray', alpha=0.1, title='Call Locations')
@@ -69,7 +76,7 @@ showandtell()  # Comment this line out when you're ready to proceed
 # only examining records that came in on weekends (sat/sun).
 #
 # .. your code here ..
-
+user1 = user1[user1.DOW.isin(['Sat','Sun'])]
 
 #
 # TODO: Further filter it down for calls that are came in either before 6AM OR after 10pm (22:00:00).
@@ -80,7 +87,7 @@ showandtell()  # Comment this line out when you're ready to proceed
 # slice, print out its length:
 #
 # .. your code here ..
-
+user1 = user1[(user1.CallTime > '22:00:00') | (user1.CallTime < '06:00:00')]
 
 #
 # INFO: Visualize the dataframe with a scatter plot as a sanity check. Since you're familiar
@@ -115,6 +122,12 @@ showandtell()  # TODO: Comment this line out when you're ready to proceed
 # Hint: Make sure you graph the CORRECT coordinates. This is part of your domain expertise.
 #
 # .. your code here ..
+
+user1 = user1.loc[:,['TowerLat','TowerLon']]
+cord = KMeans(n_clusters=2)
+cord.fit(user1)
+cord.cluster_centers_
+
 
 
 showandtell()  # TODO: Comment this line out when you're ready to proceed

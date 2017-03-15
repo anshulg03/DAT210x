@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import assignment2_helper as helper
+import numpy as np
 
 # Look pretty...
 # matplotlib.style.use('ggplot')
@@ -9,7 +10,7 @@ plt.style.use('ggplot')
 
 
 # Do * NOT * alter this line, until instructed!
-scaleFeatures = False
+scaleFeatures = True
 
 
 # TODO: Load up the dataset and remove any and all
@@ -20,20 +21,20 @@ scaleFeatures = False
 # feature?
 #
 # .. your code here ..
-
-
+df = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module4/Datasets/kidney_disease.csv', index_col = 0)
+df = df.dropna()
 
 # Create some color coded labels; the actual label feature
 # will be removed prior to executing PCA, since it's unsupervised.
 # You're only labeling by color so you can see the effects of PCA
-labels = ['red' if i=='ckd' else 'green' for i in df.classification]
+labels = ['red' if i=='ckd' else 'blue' for i in df.classification]
 
 
 # TODO: Use an indexer to select only the following columns:
 #       ['bgr','wc','rc']
 #
 # .. your code here ..
-
+df = df[['bgr','rc','wc']]
 
 
 # TODO: Print out and check your dataframe's dtypes. You'll might
@@ -48,7 +49,8 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # an appropriate command to coerce these features into the right type.
 #
 # .. your code here ..
-
+df.rc = df.rc.astype('float')
+df.wc = df.wc.astype('float')
 
 
 # TODO: PCA Operates based on variance. The variable with the greatest
@@ -61,9 +63,8 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # you probably didn't complete the previous step properly.
 #
 # .. your code here ..
-
-
-
+df.describe()
+np.var(df)    
 # TODO: This method assumes your dataframe is called df. If it isn't,
 # make the appropriate changes. Don't alter the code in scaleFeatures()
 # just yet though!
@@ -78,7 +79,11 @@ if scaleFeatures: df = helper.scaleFeatures(df)
 # and that the results of your transformation are saved in 'T'.
 #
 # .. your code here ..
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+pca.fit(df)
 
+T = pca.transform(df)
 
 # Plot the transformed data as a scatter plot. Recall that transforming
 # the data will result in a NumPy NDArray. You can either use MatPlotLib
@@ -95,5 +100,6 @@ T = pd.DataFrame(T)
 T.columns = ['component1', 'component2']
 T.plot.scatter(x='component1', y='component2', marker='o', c=labels, alpha=0.75, ax=ax)
 plt.show()
+
 
 

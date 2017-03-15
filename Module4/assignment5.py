@@ -15,7 +15,8 @@ plt.style.use('ggplot')
 # python list. You can call it 'samples'.
 #
 # .. your code here .. 
-
+samples = []
+colors = []
 #
 # TODO: Write a for-loop that iterates over the images in the
 # Module4/Datasets/ALOI/32/ folder, appending each of them to
@@ -30,6 +31,13 @@ plt.style.use('ggplot')
 #
 # .. your code here .. 
 
+import glob
+path = "C:/Users/anshangu/Documents/GitHub/DAT210x/Module4/Datasets/ALOI/32/*.PNG"
+
+for fname in glob.glob(path):
+    img = misc.imread(fname).reshape(-1)
+    samples.append(img)
+    colors.append('b')
 
 #
 # TODO: Once you're done answering the first three questions,
@@ -39,6 +47,11 @@ plt.style.use('ggplot')
 # assignment and answer the final question below.
 #
 # .. your code here .. 
+path1 = "C:/Users/anshangu/Documents/GitHub/DAT210x/Module4/Datasets/ALOI/32i/*.PNG"
+for fname in glob.glob(path1):
+    img = misc.imread(fname).reshape(-1)
+    samples.append(img)
+    colors.append('r')
 
 
 #
@@ -46,15 +59,18 @@ plt.style.use('ggplot')
 #
 # .. your code here .. 
 
-
+df = pd.DataFrame(samples)
 
 #
 # TODO: Implement Isomap here. Reduce the dataframe df down
 # to three components, using K=6 for your neighborhood size
 #
 # .. your code here .. 
+from sklearn import manifold
+iso  = manifold.Isomap(n_neighbors = 6, n_components = 3)
+iso.fit(df)
 
-
+dfiso = iso.transform(df)
 
 #
 # TODO: Create a 2D Scatter plot to graph your manifold. You
@@ -63,7 +79,9 @@ plt.style.use('ggplot')
 #
 # .. your code here .. 
 
-
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(dfiso[:,0], dfiso[:,1], c=colors, marker='.', alpha=0.75)
 
 
 #
@@ -71,6 +89,9 @@ plt.style.use('ggplot')
 # can use either 'o' or '.' as your marker:
 #
 # .. your code here .. 
+fig = plt.figure()
+ax = fig.add_subplot(111, projection = '3d')
+ax.scatter(dfiso[:,0], dfiso[:,1],dfiso[:,2], c = colors)
 
 
 

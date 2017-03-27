@@ -1,10 +1,10 @@
 # If you'd like to try this lab with PCA instead of Isomap,
 # as the dimensionality reduction technique:
 Test_PCA = True
-
+import pandas as pd
 
 def plotDecisionBoundary(model, X, y):
-  print "Plotting..."
+  print ("Plotting...")
   import matplotlib.pyplot as plt
   import matplotlib
   matplotlib.style.use('ggplot') # Look Pretty
@@ -53,13 +53,14 @@ def plotDecisionBoundary(model, X, y):
   plt.show()
 
 
-# 
+# .
 # TODO: Load in the dataset, identify nans, and set proper headers.
 # Be sure to verify the rows line up by looking at the file in a text editor.
 #
 # .. your code here ..
-
-
+df = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module5/Datasets/breast-cancer-wisconsin.data',
+                 names = ['sample', 'thickness', 'size', 'shape', 'adhesion', 'epithelial', 'nuclei', 'chromatin', 'nucleoli', 'mitoses', 'status'],
+                 na_values = ["?"], index_col = ['sample'])
 
 # 
 # TODO: Copy out the status column into a slice, then drop it from the main
@@ -71,8 +72,8 @@ def plotDecisionBoundary(model, X, y):
 # this would be a good place to drop that too if you haven't already.
 #
 # .. your code here ..
-
-
+stat = df.status.copy()
+df.drop(['status'], inplace = True, axis = 1)
 
 #
 # TODO: With the labels safely extracted from the dataset, replace any nan values
@@ -80,15 +81,17 @@ def plotDecisionBoundary(model, X, y):
 #
 # .. your code here ..
 
-
-
+df.isnull().sum()
+df = df.fillna(df.mean())
 #
 # TODO: Do train_test_split. Use the same variable names as on the EdX platform in
 # the reading material, but set the random_state=7 for reproduceability, and keep
 # the test_size at 0.5 (50%).
 #
 # .. your code here ..
+from sklearn.model_selection import train_test_split
 
+data_train, data_test, label_train, label_test = train_test_split(df,stat,test_size = 0.5, random_state = 7)
 
 
 
@@ -101,34 +104,50 @@ def plotDecisionBoundary(model, X, y):
 # of your dataset actually get transformed?
 #
 # .. your code here ..
+from sklearn import preprocessing
 
+#norm = preprocessing.Normalizer().fit(data_train)
+#data_train = norm.transform(data_train)
+#data_test = norm.transform(data_test)
 
+MinMax = preprocessing.MinMaxScaler().fit(data_train)
+data_train = MinMax.transform(data_train)
+data_test = MinMax.transform(data_test)
+
+#Rscal = preprocessing.RobustScaler().fit(data_train)
+#data_train = Rscal.transform(data_train)
+#data_test = Rscal.transform(data_test)
+
+#Sscal = preprocessing.StandardScaler().fit(data_train)
+#data_train = Sscal.transform(data_train)
+#data_test = Sscal.transform(data_test)
 
 
 #
 # PCA and Isomap are your new best friends
 model = None
 if Test_PCA:
-  print "Computing 2D Principle Components"
+  print ("Computing 2D Principle Components")
   #
   # TODO: Implement PCA here. Save your model into the variable 'model'.
   # You should reduce down to two dimensions.
   #
   # .. your code here ..
-
+  from sklearn.decomposition import PCA
   
+  model = PCA(n_components=2)
 
 else:
-  print "Computing 2D Isomap Manifold"
+  print ("Computing 2D Isomap Manifold")
   #
   # TODO: Implement Isomap here. Save your model into the variable 'model'
   # Experiment with K values from 5-10.
   # You should reduce down to two dimensions.
   #
   # .. your code here ..
+  from sklearn import manifold
+  model = manifold.Isomap(n_components = 2, n_neighbors = 8)
   
-
-
 
 #
 # TODO: Train your model against data_train, then transform both
@@ -136,7 +155,9 @@ else:
 # back into the variables themselves.
 #
 # .. your code here ..
-
+model.fit(data_train)
+data_train = model.transform(data_train)
+data_test = model.transform(data_test)
 
 
 # 
@@ -148,6 +169,10 @@ else:
 # parameter affects the results.
 #
 # .. your code here ..
+from sklearn.neighbors import KNeighborsClassifier
+
+knmodel = KNeighborsClassifier(n_neighbors=12, weights='distance')
+knmodel.fit(data_train, label_train)
 
 
 
@@ -167,6 +192,6 @@ else:
 # TODO: Calculate + Print the accuracy of the testing set
 #
 # .. your code here ..
+print(knmodel.score(data_test,label_test))
 
-
-plotDecisionBoundary(knmodel, X_test, y_test)
+plotDecisionBoundary(knmodel, data_test, label_test)

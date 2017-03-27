@@ -1,9 +1,9 @@
 import pandas as pd
-
 from scipy import misc
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 import matplotlib.pyplot as plt
+import glob
 
 # Look pretty...
 # matplotlib.style.use('ggplot')
@@ -31,7 +31,7 @@ colors = []
 #
 # .. your code here .. 
 
-import glob
+
 path = "C:/Users/anshangu/Documents/GitHub/DAT210x/Module4/Datasets/ALOI/32/*.PNG"
 
 for fname in glob.glob(path):

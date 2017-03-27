@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Look Pretty
-matplotlib.style.use('ggplot')
-#plt.style.use('ggplot')
+# matplotlib.style.use('ggplot')
+plt.style.use('ggplot')
 
 
 #

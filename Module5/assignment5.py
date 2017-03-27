@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+from sklearn.model_selection import train_test_split
 
 matplotlib.style.use('ggplot') # Look Pretty
 
@@ -52,29 +53,29 @@ def plotDecisionBoundary(model, X, y):
 # loading your data properly--don't fail on the 1st step!
 #
 # .. your code here ..
-
-
+X = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module5/Datasets/Wheat.data', index_col = 0)
+X.head()
 
 #
 # TODO: Copy the 'wheat_type' series slice out of X, and into a series
 # called 'y'. Then drop the original 'wheat_type' column from the X
 #
 # .. your code here ..
-
-
+y = X['wheat_type'].copy()
+X.drop(['wheat_type'], axis = 1, inplace = True)
 
 # TODO: Do a quick, "ordinal" conversion of 'y'. In actuality our
 # classification isn't ordinal, but just as an experiment...
 #
 # .. your code here ..
-
+y = y.astype("category").cat.codes
 
 
 #
 # TODO: Basic nan munging. Fill each row's nans with the mean of the feature
 #
 # .. your code here ..
-
+X = X.fillna(X.mean())
 
 
 #
@@ -84,7 +85,7 @@ def plotDecisionBoundary(model, X, y):
 # specify a random_state.
 #
 # .. your code here ..
-
+data_train, data_test, label_train, label_test = train_test_split(X, y, test_size = 0.33, random_state = 1)
 
 
 # 
@@ -99,6 +100,9 @@ def plotDecisionBoundary(model, X, y):
 #
 # .. your code here ..
 
+from sklearn.preprocessing import Normalizer
+model = Normalizer()
+T = model.fit(data_train)
 
 
 #
@@ -110,7 +114,8 @@ def plotDecisionBoundary(model, X, y):
 # feature-space as the original data used to train your models.
 #
 # .. your code here ..
-
+data_train = T.transform(data_train)
+data_test = T.transform(data_test)
 
 
 
@@ -124,10 +129,12 @@ def plotDecisionBoundary(model, X, y):
 # boundary in 2D would be if your KNN algo ran in 2D as well:
 #
 # .. your code here ..
+from sklearn.decomposition import PCA
+model1 = PCA(n_components=2)
+T1 = model1.fit(data_train)
 
-
-
-
+data_train = T1.transform(data_train)
+data_test = T1.transform(data_test)
 #
 # TODO: Create and train a KNeighborsClassifier. Start with K=9 neighbors.
 # NOTE: Be sure train your classifier against the pre-processed, PCA-
@@ -135,12 +142,15 @@ def plotDecisionBoundary(model, X, y):
 # your labels.
 #
 # .. your code here ..
+from sklearn.neighbors import KNeighborsClassifier
 
+model2 = KNeighborsClassifier(n_neighbors=9)
+model2.fit(data_train,label_train)
 
 
 
 # HINT: Ensure your KNeighbors classifier object from earlier is called 'knn'
-plotDecisionBoundary(knn, X_train, y_train)
+plotDecisionBoundary(model2, data_train, label_train)
 
 
 #------------------------------------
@@ -152,7 +162,7 @@ plotDecisionBoundary(knn, X_train, y_train)
 # .score will take care of running your predictions for you automatically.
 #
 # .. your code here ..
-
+print(model2.score(data_test, label_test))
 
 
 #

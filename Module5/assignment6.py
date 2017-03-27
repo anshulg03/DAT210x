@@ -2,6 +2,7 @@ import random, math
 import pandas as pd
 import numpy as np
 import scipy.io
+import matplotlib
 
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -52,7 +53,7 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
   # What class does the classifier say about each spot on the chart?
   # The values stored in the matrix are the predictions of the model
   # at said location:
-  Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+  Z = modelK.predict(np.c_[xx.ravel(), yy.ravel()])
   Z = Z.reshape(xx.shape)
 
   # Plot the mesh grid as a filled contour plot:
@@ -98,6 +99,14 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # instead of sideways. This was demonstrated in the M4/A4 code:
 #
 # .. your code here ..
+mat = scipy.io.loadmat('Datasets/face_data.mat')
+df = pd.DataFrame(mat['images']).T
+num_images, num_pixels = df.shape
+num_pixels = int(math.sqrt(num_pixels))
+
+# Rotate the pictures, so we don't have to crane our necks:
+for i in range(num_images):
+  df.loc[i,:] = df.loc[i,:].reshape(num_pixels, num_pixels).T.reshape(-1)
 
 
 #
@@ -109,6 +118,8 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # loaded it correctly.
 #
 # .. your code here ..
+face_labels = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module5/Datasets/face_labels.csv',names = ["Cat"])
+
 
 
 #
@@ -121,7 +132,9 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # than as points:
 #
 # .. your code here ..
+from sklearn.model_selection import train_test_split
 
+data_train, data_test, label_train, label_test = train_test_split(df, face_labels, test_size=0.15, random_state=7)
 
 
 if Test_PCA:
@@ -144,7 +157,12 @@ if Test_PCA:
   # data_train, and data_test.
   #
   # .. your code here ..
-
+  from sklearn.decomposition import PCA
+  model = PCA(n_components=2)
+  model.fit(data_train)
+  
+  data_train = model.transform(data_train)
+  data_test = model.transform(data_test)
 else:
   # INFO: Isomap is used *before* KNeighbors to simplify your high dimensionality
   # image samples down to just 2 components! A lot of information has been is
@@ -166,8 +184,11 @@ else:
   # data_train, and data_test.
   #
   # .. your code here ..
-
-
+  from sklearn import manifold
+  modelIso = manifold.Isomap(n_components=2, n_neighbors=5)
+  modelIso.fit(data_train)
+  data_train = modelIso.transform(data_train)
+  data_test = modelIso.transform(data_test)
 
 
 #
@@ -178,6 +199,9 @@ else:
 # labels that those 2d representations should be.
 #
 # .. your code here ..
+from sklearn.neighbors import KNeighborsClassifier
+modelK = KNeighborsClassifier(n_neighbors=5)
+modelK.fit(data_train, label_train)
 
 
 
@@ -187,7 +211,7 @@ else:
 #
 # .. your code here ..
 
-
+print(modelK.score(data_test,label_test))
 
 # Chart the combined decision boundary, the training data as 2D plots, and
 # the testing data as small images so we can visually validate performance.

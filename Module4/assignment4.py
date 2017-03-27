@@ -52,7 +52,11 @@ for i in range(num_images):
 # y is the principal component you want displayed on the y-axis, Can be 1 or 2
 #
 # .. your code here ..
+from sklearn.decomposition import PCA
 
+model = PCA(n_components=3)
+T = model.fit_transform(df)
+Plot2D(T, 'PLot PCA', 1, 2, num_to_plot=40)
 
 #
 # TODO: Implement Isomap here. Reduce the dataframe df down

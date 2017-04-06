@@ -10,13 +10,17 @@ import time
 # TODO: Load up the dataset into dataframe 'X'
 #
 # .. your code here ..
-
+X = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module6/Datasets/dataset-har-PUC-Rio-ugulino.csv',
+                sep = ';')
 
 
 #
 # TODO: Encode the gender column, 0 as male, 1 as female
 #
 # .. your code here ..
+#X.gender = X.gender.map({'Man':0,'Woman':1})
+#X.gender =  pd.get_dummies(X.gender)
+
 
 
 #
@@ -24,11 +28,12 @@ import time
 # so that they're properly represented as decimals instead
 #
 # .. your code here ..
-
+X.how_tall_in_meters = pd.to_numeric(X.how_tall_in_meters.apply(lambda x: x.replace(',','.')))
+X.body_mass_index = pd.to_numeric(X.body_mass_index.apply(lambda x: x.replace(',','.')))
 
 #
 # INFO: Check data types
-print X.dtypes
+#print (X.dtypes)
 
 
 
@@ -38,38 +43,43 @@ print X.dtypes
 # problematic
 #
 # .. your code here ..
-
+#pd.to_numeric(X.z4, errors = 'raise')
 
 #
 # INFO: If you find any problematic records, drop them before calling the
 # to_numeric methods above...
+X.drop([122076], inplace = True)
+X.z4 = pd.to_numeric(X.z4, errors = 'raise')
 
 
 #
 # TODO: Encode your 'y' value as a dummies version of your dataset's "class" column
 #
 # .. your code here ..
-
+y = X['class']
+y=pd.get_dummies(y)
 
 #
 # TODO: Get rid of the user and class columns
 #
 # .. your code here ..
-print X.describe()
+X = X.drop(['user','class'], axis = 1)
+#print (X.describe())
 
 
 #
 # INFO: An easy way to show which rows have nans in them
-print X[pd.isnull(X).any(axis=1)]
+#print (X[pd.isnull(X).any(axis=1)])
 
-
+#pd.isnull(X).any()
 
 #
 # TODO: Create an RForest classifier 'model' and set n_estimators=30,
 # the max_depth to 10, and oob_score=True, and random_state=0
 #
 # .. your code here ..
-
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(n_estimators=30, max_depth=10, oob_score=True,random_state=0)
 
 
 # 
@@ -78,36 +88,39 @@ print X[pd.isnull(X).any(axis=1)]
 # Use variable names: X_train, X_test, y_train, y_test
 #
 # .. your code here ..
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 7)
 
 
 
-
-
-print "Fitting..."
+print ("Fitting...")
 s = time.time()
 #
 # TODO: train your model on your training set
 #
 # .. your code here ..
-print "Fitting completed in: ", time.time() - s
+model.fit(X_train,y_train)
+print ("Fitting completed in: ", time.time() - s)
 
 
 #
 # INFO: Display the OOB Score of your data
 score = model.oob_score_
-print "OOB Score: ", round(score*100, 3)
+print ("OOB Score: ", round(score*100, 3))
 
 
 
 
-print "Scoring..."
+print ("Scoring...")
 s = time.time()
 #
 # TODO: score your model on your test set
 #
 # .. your code here ..
-print "Score: ", round(score*100, 3)
-print "Scoring completed in: ", time.time() - s
+score = model.score(X_test,y_test)
+print ("Score: ", round(score*100, 3))
+print ("Scoring completed in: ", time.time() - s)
 
 
 #

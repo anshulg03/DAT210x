@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np 
 import time
-
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
 
 # 
 # INFO: Your Parameters.
@@ -87,19 +89,20 @@ def drawPlots(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 
       cnt += 1
 
-  print "Max 2D Score: ", max_2d_score
+  print ("Max 2D Score: ", max_2d_score)
   fig.set_tight_layout(True)
 
 
 def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
-  print '\n\n' + wintitle + ' Results'
+  print ('\n\n' + wintitle + ' Results')
   s = time.time()
   for i in range(iterations):
     #
     # TODO: train the classifier on the training data / labels:
     #
     # .. your code here ..
-  print "{0} Iterations Training Time: ".format(iterations), time.time() - s
+    model.fit(X_train,y_train)
+  print ("{0} Iterations Training Time: ".format(iterations), time.time() - s)
 
 
   s = time.time()
@@ -108,8 +111,9 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
     # TODO: score the classifier on the testing data / labels:
     #
     # .. your code here ..
-  print "{0} Iterations Scoring Time: ".format(iterations), time.time() - s
-  print "High-Dimensionality Score: ", round((score*100), 3)
+    score = model.score(X_test,y_test)
+  print ("{0} Iterations Scoring Time: ".format(iterations), time.time() - s)
+  print ("High-Dimensionality Score: ", round((score*100), 3))
 
 
 
@@ -119,17 +123,17 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 # Indices shouldn't be doubled, nor weird headers...
 #
 # .. your code here ..
-
+X = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module6/Datasets/Wheat.data', index_col = 0)
 
 # INFO: An easy way to show which rows have nans in them
-#print X[pd.isnull(X).any(axis=1)]
-
+#
+print (X[pd.isnull(X).any(axis=1)])
 
 # 
 # TODO: Go ahead and drop any row with a nan
 #
 # .. your code here ..
-
+X.dropna(inplace = True)
 
 
 # 
@@ -146,8 +150,11 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 # you in Module 5 -- canadian:0, kama:1, and rosa:2
 #
 # .. your code here ..
+y = X['wheat_type']
+X.drop('wheat_type', axis = 1, inplace = True)
 
-
+#y = pd.DataFrame(y)
+y = y.map({'canadian':0, 'kama':1,'rosa':2})
 
 # 
 # TODO: Split your data into test / train sets
@@ -155,7 +162,7 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 # Use variable names: X_train, X_test, y_train, y_test
 #
 # .. your code here ..
-
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 7)
 
 
 #
@@ -163,6 +170,7 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 # Use a linear kernel, and set the C value to C
 #
 # .. your code here ..
+svc = SVC(C=C, kernel='linear')
 
 
 #
@@ -170,7 +178,7 @@ def benchmark(model, X_train, X_test, y_train, y_test, wintitle='Figure 1'):
 # Set the neighbor count to 5
 #
 # .. your code here ..
-
+knn = KNeighborsClassifier(n_neighbors=5)
 
 
 
@@ -181,12 +189,14 @@ drawPlots(knn, X_train, X_test, y_train, y_test, 'KNeighbors')
 benchmark(svc, X_train, X_test, y_train, y_test, 'SVC')
 drawPlots(svc, X_train, X_test, y_train, y_test, 'SVC')
 
-plt.show()
-
-
 
 #
 # BONUS: After submitting your answers, toy around with
 # gamma, kernel, and C.
 
+from sklearn.tree import DecisionTreeClassifier
 
+model = DecisionTreeClassifier(max_depth=1,random_state=2)
+benchmark(model, X_train, X_test, y_train, y_test, 'DTree')
+drawPlots(model, X_train, X_test, y_train, y_test, 'DTree')
+plt.show()

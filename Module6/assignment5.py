@@ -1,5 +1,6 @@
 import pandas as pd
-
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 
 #https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.names
 
@@ -12,16 +13,22 @@ import pandas as pd
 # Check NA Encoding
 #
 # .. your code here ..
+X = pd.read_csv('C:/Users/anshangu/Documents/GitHub/DAT210x/Module6/Datasets/agaricus-lepiota.data', header = None,
+                names = ['Edible', 'cap-shape', 'cap-surface', 'cap-color', 'bruises', 'odor', 'gill-attachment', 'gill-spacing', 'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring', 'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 'veil-type', 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat'],
+                na_values = '?')
+
+
 
 # INFO: An easy way to show which rows have nans in them
-#print X[pd.isnull(X).any(axis=1)]
+#print (X[pd.isnull(X).any(axis=1)])
 
-
+pd.isnull(X).sum()
 # 
 # TODO: Go ahead and drop any row with a nan
 #
 # .. your code here ..
-print X.shape
+X.dropna(inplace = True)
+#print (X.shape)
 
 
 #
@@ -30,13 +37,15 @@ print X.shape
 # you in Module 5 -- canadian:0, kama:1, and rosa:2
 #
 # .. your code here ..
+y = X.Edible
+X.drop('Edible', axis = 1, inplace = True)
 
-
+y = y.map({'e':1, 'p':0})
 #
 # TODO: Encode the entire dataset using dummies
 #
 # .. your code here ..
-
+X1 = pd.get_dummies(X)
 
 # 
 # TODO: Split your data into test / train sets
@@ -44,13 +53,14 @@ print X.shape
 # Use variable names: X_train, X_test, y_train, y_test
 #
 # .. your code here ..
-
+X_train, X_test, y_train, y_test = train_test_split(X1, y, test_size = 0.3, random_state = 7)
 
 
 #
 # TODO: Create an DT classifier. No need to set any parameters
 #
 # .. your code here ..
+model = DecisionTreeClassifier()
 
  
 #
@@ -58,7 +68,11 @@ print X.shape
 # TODO: score the classifier on the testing data / labels:
 #
 # .. your code here ..
-print "High-Dimensionality Score: ", round((score*100), 3)
+model = model.fit(X_train, y_train)
+score = model.score(X_test, y_test)
+
+print (score)
+print ("High-Dimensionality Score: ", round((score*100), 3))
 
 
 #
@@ -70,5 +84,13 @@ print "High-Dimensionality Score: ", round((score*100), 3)
 # tree directly from the exported tree.dot file without having to issue a call.
 #
 # .. your code here ..
+from sklearn import tree
+tree.export_graphviz(model, out_file='tree.dot', feature_names=X1.columns)
 
-
+#import pydot
+#dotfile = StringIO()
+#tree.export_graphviz(dtreg, out_file=dotfile)
+#pydot.graph_from_dot_data(dotfile.getvalue()).write_png("dtree2.png")
+#
+#from subprocess import call
+#call(['dot', '-T', 'png', 'tree.dot', '-o', 'tree.png'])

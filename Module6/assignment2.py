@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.svm import SVC
 
 # The Dataset comes from:
 # https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits
@@ -23,15 +24,18 @@ def load(path_test, path_train):
   y_test  = testing.ix[:,n_features-1:].values.ravel()
   y_train = training.ix[:,n_features-1:].values.ravel()
 
-  #
-  # Special:
+  
+  # Special
+#  X_train = X_train.ix[:152,]
+#  y_train = y_train[:153]
+
 
   return X_train, X_test, y_train, y_test
 
 
 def peekData(X_train):
   # The 'targets' or labels are stored in y. The 'samples' or data is stored in X
-  print "Peeking your data..."
+  print ("Peeking your data...")
   fig = plt.figure()
 
   cnt = 0
@@ -81,10 +85,9 @@ def drawPredictions(X_train, X_test, y_train, y_test):
 
 #
 # TODO: Pass in the file paths to the .tes and the .tra files
-X_train, X_test, y_train, y_test = load('', '')
+X_train, X_test, y_train, y_test = load('C:/Users/anshangu/Documents/GitHub/DAT210x/Module6/Datasets/optdigits.tes', 'C:/Users/anshangu/Documents/GitHub/DAT210x/Module6/Datasets/optdigits.tra')
 
 import matplotlib.pyplot as plt
-from sklearn import svm
 
 # 
 # Get to know your data. It seems its already well organized in
@@ -97,18 +100,20 @@ peekData(X_train)
 # TODO: Create an SVC classifier. Leave C=1, but set gamma to 0.001
 # and set the kernel to linear. Then train the model on the training
 # data / labels:
-print "Training SVC Classifier..."
+print ("Training SVC Classifier...")
 #
 # .. your code here ..
-
+model = SVC(kernel = 'poly', C=1, gamma = 0.001)
+model.fit(X_train, y_train)
 
 
 
 # TODO: Calculate the score of your SVC against the testing data
-print "Scoring SVC Classifier..."
+print ("Scoring SVC Classifier...")
 #
 # .. your code here ..
-print "Score:\n", score
+score = model.score(X_test, y_test)
+print ("Score:\n", score)
 
 
 # Visual Confirmation of accuracy
@@ -120,7 +125,9 @@ drawPredictions(X_train, X_test, y_train, y_test)
 # By TRUE value, we mean, the actual provided label for that sample
 #
 # .. your code here ..
-print "1000th test label: ", true_1000th_test_value)
+true_1000th_test_value = y_test[1000]
+
+print ("1000th test label: ", true_1000th_test_value)
 
 
 #
@@ -130,7 +137,8 @@ print "1000th test label: ", true_1000th_test_value)
 # notes from the previous module's labs.
 #
 # .. your code here ..
-print "1000th test prediction: ", guess_1000th_test_value
+guess_1000th_test_value = model.predict(X_test.iloc[[1000]])
+print ("1000th test prediction: ", guess_1000th_test_value)
 
 
 #
@@ -138,7 +146,8 @@ print "1000th test prediction: ", guess_1000th_test_value
 # visually check if it was a hard image, or an easy image
 #
 # .. your code here ..
-
+plt.imshow(X_test.ix[1000,:].reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
+plt.show()
 
 #
 # TODO: Were you able to beat the USPS advertised accuracy score
